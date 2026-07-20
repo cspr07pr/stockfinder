@@ -1,0 +1,48 @@
+Este documento es para que CLAUDE sepa DE QUE SE TRATA NUESTRO PROYECTO:
+
+Este proyecto es para ayudarme a mi analizar los mercado financiero de una  mas eficiente y entender todos los puntos de una accion antes de invertir en ella. Dentro de los mercado financieros hay mucha informacion que puede provocar que una accion suba o baje, pero quiero hacer un sistema de agentes que me ayuden a poder procesar la informacion de manera facil, y orientada.
+
+Como quiero que funcione,
+
+Todo debe trabajar desde un Agente principal para que no pierda contexto de la informacion.
+
+Ejemplo:
+
+-> Agente Principal - debe ya haber llegado con los resultados de los sub agentes….a través de una metrica de scorecard que te lo anado en los documentos de referencia…
+
+->Sub Agentes:
+
+Business Analysis
+Aqui debes concentrate en analizar la empresa
+Financial Analysis
+Aqui debes concentrarte en analizar los datos
+Market Analysis
+Aqui debes buscar que esta pasando en el sector que participa la empresa y el mercado global y los indices
+Technical/Momentum
+Aqui debes leer graficas y puntos donde la accion esta rebotando o fallando multiples veces
+Risk Analysis
+Aqui debes analizar tanto mi perfil de inversionista como el riesgo de poseer esta empresa
+Valuation Analysis
+SEGUN los datos que veas en el financial analysis de la empresa debes ver cuales son las valuaciones que debemos de hacer para asignar despues targets en el precio de la accion
+Visual 
+Aqui vas a utilizar toda la data y la vas entregar de forma visual y con graficas, hay un documento llamado referencia donde te voy a poner todos los visuales que me interesa conectar.
+
+Como queremos que funcione los agentes y como queremos ver la informacion
+
+Queremos que nos entregue un reporte detallado sobre el comportamiento de una accion y debe seguir los pasos y los .md con las reglas creadas en la parte o carpeta llamada “Cerebro”
+Este reporte debe de incluir, si la empresa se encuentra en un buen precio, si se puede invertir o se deberia de evitar, si decide evitar cuanto tiempo pondrias que deberiamos de revistar el analisis
+Dentro de este mismo reporte necesito que me ayudes a crear diferentes precios aproximados en que la accion pudiese encontrarse utilizando los datos dentro del cerebro y estimaciones de un analista financiero.
+Quiero que me digas inversionistas importantes o relacionados si es que tiene a otras empresas que tambien hayan sido exitosas
+Quiero que me digas tambien todos los SEC insider buying and selling de la empresa que sea importante y para que sean importantes deben exceder un total de ventas de acciones o compras superior a $1M de dolares…
+
+Cuando estes creando el MD file de Claude necesito que se cree una estructura donde primero el agente principal entienda la tarea por parte de usuario o del inversionista en este caso y busque informacion general dentro de la empresa, despues pase a los proximos agentes a revisar y analizar los proximos segmentos dentro de la empresa 
+
+
+
+Como va a funcionar la entrega de datos e informacion:
+
+El usuario va entrar la empresa que el desea analizar a través de un input
+
+Una vez tengas ese input debe correr detras de escena los diferentes agentes y sub agentes investigando a través de los procesos que ya establecimos, para los datos del mercado vamos a utilizar FMP, Robinhood, Finn Hub, Fred para obtener los diferentes datos. 
+
+Ese reporte debe tener todo los datos necesarios e informativos para tomar una mejor deicison financiera. Recuerda de manera visual

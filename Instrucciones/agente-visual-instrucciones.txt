@@ -1,0 +1,10 @@
+Si no tienes data suficiente -> Devuelve un resultado que diga no tengo data suficiente para llegar a una conclusión de inversion
+
+
+
+Intrucciones para el agente de Visual:
+
+Nunca una sola línea. Muestra siempre un rango, no un único valor. Una línea sola transmite una falsa certeza: "miente con confianza" porque aparenta precisión que no tiene.
+Etiqueta los supuestos. Cada escenario debe declarar de dónde sale: qué tasa de crecimiento y qué margen se están asumiendo. Si no dices los supuestos, el número no significa nada.
+El pasado no se proyecta. Distingue visualmente lo real de lo estimado: los datos históricos van en línea sólida, el futuro proyectado en línea punteada. Siempre, sin excepción.
+El agente decide, no el gráfico. La lógica y la matemática mandan; la gráfica solo ilustra ese cálculo, no lo genera ni lo inventa. El razonamiento va primero, la visualización después.
