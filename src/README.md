@@ -15,10 +15,16 @@ python -m pip install -r requirements.txt
 ```
 
 ## Verificar que las fuentes funcionan
+El paquete usa layout `src/`, así que se indica con `PYTHONPATH`:
 ```powershell
-python -m stockfinder check            # valida claves + ping a FMP/Finnhub/FRED
-python -m stockfinder check --no-ping  # solo verifica que las claves existan
+$env:PYTHONPATH="src"; python -m stockfinder check   # valida claves + ping
+python -m stockfinder check --no-ping                # solo presencia de claves
 ```
+> En Git Bash: `PYTHONPATH=src python -m stockfinder check`
+> (o instala en editable con `python -m pip install -e .` y omite PYTHONPATH).
+
+**Nota FMP:** los endpoints `v3` quedaron obsoletos (403 "Legacy"). Se usa la
+API `stable` (`/stable/quote?symbol=...`).
 
 > El comando `check` no requiere las dependencias de `requirements.txt`
 > (usa solo la librería estándar), así que sirve como primera prueba tras

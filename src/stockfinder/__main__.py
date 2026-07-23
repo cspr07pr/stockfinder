@@ -15,15 +15,22 @@ import sys
 from .config import ENV_PATH, load_config
 from .sources.http import HttpError, get_json
 
-OK = "\033[92mOK\033[0m"
-FAIL = "\033[91mFALLA\033[0m"
-SKIP = "\033[90m--\033[0m"
+# La consola de Windows suele venir en cp1252; forzamos UTF-8 para acentos/simbolos.
+try:
+    sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
+except Exception:
+    pass
+
+OK = "OK   "
+FAIL = "FALLA"
+SKIP = "--   "
 
 
 def _ping_fmp(key: str) -> str:
+    # Los endpoints v3 quedaron como "Legacy" (403). Se usa la API stable.
     data = get_json(
-        "https://financialmodelingprep.com/api/v3/quote-short/AAPL",
-        {"apikey": key},
+        "https://financialmodelingprep.com/stable/quote",
+        {"symbol": "AAPL", "apikey": key},
     )
     if isinstance(data, list) and data and "price" in data[0]:
         return f"AAPL ~${data[0]['price']}"
@@ -82,7 +89,8 @@ def cmd_check(ping: bool) -> int:
         print(f"  {'Schwab':<10} {FAIL}  App Key/Secret ausentes")
         all_ok = False
 
-    print("\n" + ("Todo listo ✅" if all_ok else "Hay fuentes por corregir ⚠"))
+    print("\n" + ("Todo listo. Las 4 fuentes responden."
+                  if all_ok else "Hay fuentes por corregir."))
     return 0 if all_ok else 1
 
 
