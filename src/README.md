@@ -48,6 +48,20 @@ $env:PYTHONPATH="src"; python -m stockfinder analyze AAPL --capital 25000
 Corre los 6 sub-agentes, agrega el scorecard y genera el reporte (decisión,
 entrada/salida, escenarios, insiders >$1M).
 
+## Charles Schwab (OAuth 2.0)
+La primera vez hay que autorizar en el navegador:
+```powershell
+# 1) genera la URL de autorizacion
+python -m stockfinder schwab-login
+# 2) abre la URL, inicia sesion en Schwab y autoriza
+# 3) copia la URL de redireccion (https://127.0.0.1/?code=...) y:
+python -m stockfinder schwab-login --redirect-url "https://127.0.0.1/?code=..."
+# 4) prueba
+python -m stockfinder schwab-test AAPL
+```
+Los tokens se guardan en `API/schwab_token.json` (ignorado por git) y se
+refrescan solos. El access token dura ~30 min; el refresh ~7 días.
+
 ## Estado
 - ✅ Config + carga de claves
 - ✅ `check` (validación de fuentes)
@@ -55,7 +69,7 @@ entrada/salida, escenarios, insiders >$1M).
 - ✅ Sub-agentes (Business, Financial, Market, Technical, Valuation, Risk)
 - ✅ Scorecard + regla de decisión (Cerebro/00)
 - ✅ Orquestador + reporte de texto (`analyze <TICKER>`)
-- ⬜ Conector Schwab (OAuth) — opcional
+- ✅ Conector Schwab (OAuth) — `schwab-login` / `schwab-test`
 - ⬜ Reporte visual HTML (reusar `referencias/ejemplos/`)
 
 ### Conectores disponibles (`sources/`)

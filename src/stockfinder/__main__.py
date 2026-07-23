@@ -104,6 +104,53 @@ def cmd_analyze(symbol: str, capital: float | None) -> int:
     return 0
 
 
+def cmd_schwab_login(redirect_url: str | None) -> int:
+    from .config import load_config
+    from .sources.http import HttpError
+    from .sources.schwab import SchwabAuth
+
+    try:
+        auth = SchwabAuth(load_config())
+    except ValueError as exc:
+        print(f"{FAIL}  {exc}")
+        return 1
+
+    if not redirect_url:
+        print("Paso 1. Abre esta URL en tu navegador e inicia sesion en Schwab:\n")
+        print("   " + auth.build_authorize_url() + "\n")
+        print("Paso 2. Tras autorizar, el navegador te llevara a una pagina que")
+        print("        NO carga (https://127.0.0.1/...). Copia la URL COMPLETA")
+        print("        de la barra de direcciones y vuelve a correr:\n")
+        print('   python -m stockfinder schwab-login --redirect-url "PEGA_LA_URL_AQUI"\n')
+        return 0
+
+    try:
+        auth.exchange_code(redirect_url)
+    except HttpError as exc:
+        print(f"{FAIL}  No se pudo intercambiar el code: {exc}")
+        return 1
+    print(f"{OK}  Tokens de Schwab guardados. Prueba con: python -m stockfinder schwab-test")
+    return 0
+
+
+def cmd_schwab_test(symbol: str) -> int:
+    from .config import load_config
+    from .sources.http import HttpError
+    from .sources.schwab import SchwabAuth, SchwabClient
+
+    try:
+        client = SchwabClient(SchwabAuth(load_config()))
+        q = client.quote(symbol)
+        quote = q.get("quote", q)
+        last = quote.get("lastPrice") or quote.get("mark")
+        print(f"{OK}  Schwab responde: {symbol.upper()} ultimo ${last} "
+              f"(bid {quote.get('bidPrice')} / ask {quote.get('askPrice')})")
+        return 0
+    except (HttpError, ValueError) as exc:
+        print(f"{FAIL}  {exc}")
+        return 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="stockfinder")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -117,11 +164,22 @@ def main(argv: list[str] | None = None) -> int:
     p_an.add_argument("--capital", type=float, default=None,
                       help="capital disponible en USD (para dimensionar la posicion)")
 
+    p_login = sub.add_parser("schwab-login", help="autoriza Charles Schwab (OAuth)")
+    p_login.add_argument("--redirect-url", default=None,
+                         help="URL de redireccion con el ?code=... tras autorizar")
+
+    p_stest = sub.add_parser("schwab-test", help="prueba una cotizacion via Schwab")
+    p_stest.add_argument("symbol", nargs="?", default="AAPL", help="ticker (default AAPL)")
+
     args = parser.parse_args(argv)
     if args.cmd == "check":
         return cmd_check(ping=not args.no_ping)
     if args.cmd == "analyze":
         return cmd_analyze(args.symbol, args.capital)
+    if args.cmd == "schwab-login":
+        return cmd_schwab_login(args.redirect_url)
+    if args.cmd == "schwab-test":
+        return cmd_schwab_test(args.symbol)
     return 2
 
 
