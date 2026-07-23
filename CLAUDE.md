@@ -141,9 +141,10 @@ Todo con foco en **puntos de entrada/salida y timing**, según el perfil.
 Para los datos de mercado se usan:
 
 - **FMP** (Financial Modeling Prep)
-- **Robinhood**
+- **Charles Schwab** (bróker + market data, vía OAuth 2.0)
 - **Finnhub**
 - **FRED** (datos macroeconómicos)
+- **Robinhood** (opcional)
 
 > Las claves/config de estas fuentes van en `API/` y **nunca se suben al repo**
 > (ver `.gitignore`). Nunca coloques claves en el chat ni en archivos versionados.

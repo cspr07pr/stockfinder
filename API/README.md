@@ -27,7 +27,25 @@ repositorio** (las bloquea `../.gitignore`).
 | **FMP** (fundamentales, precios, múltiplos) | `FMP_API_KEY` | site.financialmodelingprep.com/developer/docs |
 | **Finnhub** (perfil, estimados, insiders) | `FINNHUB_API_KEY` | finnhub.io/dashboard |
 | **FRED** (macro: tasas, inflación) | `FRED_API_KEY` | fredaccount.stlouisfed.org/apikeys |
-| **Robinhood** (precios, cuenta) | `ROBINHOOD_USERNAME` / `ROBINHOOD_PASSWORD` / `ROBINHOOD_MFA_TOKEN` | Login de tu cuenta (no es API pública oficial) |
+| **Charles Schwab** (bróker + market data) | `SCHWAB_APP_KEY` / `SCHWAB_APP_SECRET` / `SCHWAB_CALLBACK_URL` | developer.schwab.com |
+| **Robinhood** (opcional) | `ROBINHOOD_USERNAME` / `ROBINHOOD_PASSWORD` / `ROBINHOOD_MFA_TOKEN` | Login de tu cuenta (no es API pública oficial) |
+
+### Charles Schwab — OAuth 2.0 (no es una simple API key)
+
+Schwab requiere un flujo OAuth, no solo pegar una clave:
+
+1. En **developer.schwab.com** crea una app y activa los productos
+   **"Market Data Production"** y **"Accounts and Trading"**.
+2. Copia el **App Key** (client ID) y el **App Secret** a `API/.env`
+   (`SCHWAB_APP_KEY`, `SCHWAB_APP_SECRET`).
+3. Configura la **Callback URL** de la app igual a `SCHWAB_CALLBACK_URL`
+   (por defecto `https://127.0.0.1`).
+4. La primera vez, autorizas en el navegador y se generan los **tokens**
+   (access ~30 min + refresh ~7 días). Se guardan en `API/schwab_token.json`,
+   que **git ignora**. Cuando el refresh token caduque, hay que reautorizar.
+
+> El App Secret y el archivo de tokens son tan sensibles como una contraseña:
+> nunca al repo ni al chat.
 
 ---
 
@@ -50,3 +68,4 @@ repositorio** (las bloquea `../.gitignore`).
 |---|---|---|
 | `.env.example` | ✅ Sí | Plantilla con nombres de variables, sin valores |
 | `.env` | ❌ No | Tus claves reales (lo crea cada quien en su equipo) |
+| `schwab_token.json` | ❌ No | Tokens OAuth de Schwab (se generan al autorizar) |

@@ -5,7 +5,7 @@ Leer **gráficas**: tendencia, soportes/resistencias (puntos de rebote o fallo
 múltiple), momentum y volumen. Define **zonas de entrada, salida y timing**.
 
 ## Herramientas / fuentes
-- Robinhood, FMP, Finnhub (precios históricos OHLCV).
+- Charles Schwab (price history), FMP, Finnhub, Robinhood opcional (OHLCV).
 
 ## Input
 `{ "ticker": "<símbolo>", "pérdida_máx": "8–10%" }`

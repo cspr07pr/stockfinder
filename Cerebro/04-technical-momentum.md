@@ -21,7 +21,8 @@ clave para los **puntos de entrada/salida y el timing** (prioridad del perfil).
 
 ## Fuentes
 
-- **Robinhood**, FMP, Finnhub (precios históricos, OHLCV).
+- **Charles Schwab** (price history / quotes), FMP, Finnhub, Robinhood (opcional)
+  — precios históricos, OHLCV.
 
 ## Reglas de puntuación
 
