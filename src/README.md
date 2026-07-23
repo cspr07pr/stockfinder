@@ -44,6 +44,14 @@ src/stockfinder/
 ## Estado
 - ✅ Config + carga de claves
 - ✅ `check` (validación de fuentes)
-- ⬜ Conectores completos (FMP, Finnhub, FRED, Schwab OAuth)
+- ✅ Conectores FMP, Finnhub y FRED (datos reales verificados)
+- ⬜ Conector Schwab (OAuth)
 - ⬜ Sub-agentes y scorecard
 - ⬜ Orquestador + reporte
+
+### Conectores disponibles (`sources/`)
+| Fuente | Métodos clave |
+|---|---|
+| `fmp.FMP` | quote, profile, income_statement, balance_sheet, cash_flow, ratios_ttm, key_metrics_ttm, price_target_consensus, analyst_estimates, historical_prices |
+| `finnhub.Finnhub` | quote, profile, insider_transactions, recommendations, metrics |
+| `fred.FRED` | latest, observations, yoy, macro_snapshot |
