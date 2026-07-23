@@ -1,0 +1,371 @@
+<title>StockFinder · AAPL</title>
+<style>
+  :root{
+    --bg:#eceef5; --card:#ffffff; --ink:#1c1e26; --ink-2:#5a5f6e; --ink-3:#8a90a0;
+    --line:#e7e9f0; --line-2:#eef0f6;
+    --accent:#6c5ce7; --accent-soft:#ece9fd;
+    --good:#2fb37a; --good-soft:#e2f5ec;
+    --warn:#e8a33d; --warn-soft:#fcefda;
+    --bad:#e85d7a; --bad-soft:#fce4ea;
+    --shadow:0 1px 2px rgba(28,30,38,.04), 0 8px 24px rgba(28,30,38,.06);
+    --r:20px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#101118; --card:#191b24; --ink:#eef0f6; --ink-2:#a2a8ba; --ink-3:#6c7286;
+      --line:#262936; --line-2:#20232e;
+      --accent:#8b7bff; --accent-soft:#241f45;
+      --good:#3ccb8a; --good-soft:#12281f;
+      --warn:#f0b45a; --warn-soft:#2c2413;
+      --bad:#ff7593; --bad-soft:#2e1620;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#eceef5; --card:#ffffff; --ink:#1c1e26; --ink-2:#5a5f6e; --ink-3:#8a90a0;
+    --line:#e7e9f0; --line-2:#eef0f6;
+    --accent:#6c5ce7; --accent-soft:#ece9fd;
+    --good:#2fb37a; --good-soft:#e2f5ec; --warn:#e8a33d; --warn-soft:#fcefda;
+    --bad:#e85d7a; --bad-soft:#fce4ea;
+    --shadow:0 1px 2px rgba(28,30,38,.04), 0 8px 24px rgba(28,30,38,.06);
+  }
+  :root[data-theme="dark"]{
+    --bg:#101118; --card:#191b24; --ink:#eef0f6; --ink-2:#a2a8ba; --ink-3:#6c7286;
+    --line:#262936; --line-2:#20232e;
+    --accent:#8b7bff; --accent-soft:#241f45;
+    --good:#3ccb8a; --good-soft:#12281f; --warn:#f0b45a; --warn-soft:#2c2413;
+    --bad:#ff7593; --bad-soft:#2e1620;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.45;
+    font-variant-numeric:tabular-nums}
+  .wrap{max-width:1120px;margin:0 auto;padding:28px 20px 60px}
+  .num{font-variant-numeric:tabular-nums}
+  h1,h2,h3{margin:0}
+  .eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+
+  /* header */
+  .top{display:flex;flex-wrap:wrap;align-items:center;gap:16px 20px;margin-bottom:22px}
+  .tick{display:flex;align-items:center;gap:14px}
+  .logo{width:46px;height:46px;border-radius:13px;background:var(--ink);color:var(--card);
+    display:grid;place-items:center;font-weight:800;font-size:22px}
+  .tick h1{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .tick .sub{color:var(--ink-2);font-size:13px}
+  .spacer{flex:1}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+    font-weight:700;font-size:13px}
+  .pill.warn{background:var(--warn-soft);color:var(--warn)}
+  .pill .dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+  .glob{display:flex;align-items:baseline;gap:8px}
+  .glob .v{font-size:26px;font-weight:800}
+  .glob .d{color:var(--ink-3);font-size:13px}
+
+  /* grid */
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;
+    border:1px solid var(--line-2)}
+  .col-4{grid-column:span 4}
+  .col-5{grid-column:span 5}
+  .col-6{grid-column:span 6}
+  .col-7{grid-column:span 7}
+  .col-8{grid-column:span 8}
+  .col-12{grid-column:span 12}
+  @media(max-width:860px){
+    .col-4,.col-5,.col-6,.col-7,.col-8{grid-column:span 12}
+  }
+  .card h3{font-size:15px;font-weight:700;margin-bottom:2px}
+  .card .cap{color:var(--ink-3);font-size:12px;margin-bottom:16px}
+  .card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+  .tag{font-size:11px;font-weight:700;padding:4px 9px;border-radius:8px;background:var(--line-2);color:var(--ink-2)}
+
+  /* gauge */
+  .gauge{display:flex;flex-direction:column;align-items:center}
+  .gauge .val{font-size:40px;font-weight:800;line-height:1;margin-top:-46px}
+  .gauge .of{color:var(--ink-3);font-size:13px;margin-bottom:6px}
+  .zones{display:flex;gap:6px;margin-top:14px;width:100%;font-size:11px}
+  .zones div{flex:1;text-align:center;padding:6px 2px;border-radius:8px;font-weight:700}
+  .z-bad{background:var(--bad-soft);color:var(--bad)}
+  .z-warn{background:var(--warn-soft);color:var(--warn)}
+  .z-good{background:var(--good-soft);color:var(--good)}
+  .z-on{outline:2px solid currentColor;outline-offset:-2px}
+
+  /* agent bars */
+  .bars{display:flex;flex-direction:column;gap:13px}
+  .brow{display:grid;grid-template-columns:104px 1fr 34px;align-items:center;gap:10px}
+  .brow .nm{font-size:13px;font-weight:600}
+  .brow .nm small{display:block;color:var(--ink-3);font-weight:600;font-size:10.5px;letter-spacing:.04em}
+  .track{height:9px;background:var(--line-2);border-radius:999px;overflow:hidden}
+  .fill{height:100%;border-radius:999px}
+  .brow .sc{text-align:right;font-weight:800;font-size:14px}
+  .f-good{background:var(--good)} .f-warn{background:var(--warn)} .f-bad{background:var(--bad)}
+  .t-good{color:var(--good)} .t-warn{color:var(--warn)} .t-bad{color:var(--bad)}
+
+  /* legend */
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:4px;font-size:12px;color:var(--ink-2)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .swatch{width:22px;height:0;border-top-width:3px;border-top-style:solid;border-radius:2px}
+  .sw-solid{border-color:var(--ink-2)}
+  .sw-dash{border-top-style:dashed;border-color:var(--accent)}
+
+  /* scenarios */
+  .scn{position:relative;margin-top:6px}
+  .scale{position:relative;height:26px;margin:0 6px}
+  .scale .tick-l{position:absolute;top:12px;transform:translateX(-50%);font-size:11px;color:var(--ink-3)}
+  .now-line{position:absolute;top:0;bottom:44px;width:2px;background:var(--ink);border-radius:2px;z-index:3}
+  .now-tag{position:absolute;transform:translateX(-50%);background:var(--ink);color:var(--card);
+    font-size:11px;font-weight:700;padding:3px 7px;border-radius:7px;white-space:nowrap;z-index:4}
+  .srow{position:relative;height:44px;margin:0 6px}
+  .sband{position:absolute;height:26px;top:0;border-radius:8px;border:2px dashed;display:flex;
+    align-items:center;justify-content:center;font-size:11.5px;font-weight:700}
+  .slabel{display:flex;justify-content:space-between;font-size:12px;margin:2px 6px 0}
+  .slabel .as{color:var(--ink-3)}
+  .b-good{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+  .b-warn{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+  .b-bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+
+  /* ladder */
+  .ladder{display:flex;flex-direction:column;gap:0}
+  .lrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line-2)}
+  .lrow:last-child{border-bottom:0}
+  .lrow .lv{width:118px;font-weight:800;font-size:14px}
+  .lrow .lb{flex:1;font-size:12.5px;color:var(--ink-2)}
+  .lrow .chip{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:7px}
+  .c-res{background:var(--bad-soft);color:var(--bad)}
+  .c-now{background:var(--accent-soft);color:var(--accent)}
+  .c-sup{background:var(--good-soft);color:var(--good)}
+  .c-ma{background:var(--line-2);color:var(--ink-2)}
+
+  /* KPI tiles */
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .kpi{background:var(--line-2);border-radius:14px;padding:14px}
+  .kpi .k{font-size:12px;color:var(--ink-2);font-weight:600}
+  .kpi .v{font-size:22px;font-weight:800;margin-top:4px}
+  .kpi .v small{font-size:12px;font-weight:700}
+  .up{color:var(--good)}
+
+  /* risk */
+  .seg{display:flex;gap:4px;margin:12px 0 8px}
+  .seg i{height:12px;flex:1;border-radius:4px;background:var(--line-2)}
+  .seg i.on{background:var(--warn)}
+  .seg i.max{background:var(--bad)}
+  .rlab{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2)}
+  .note{margin-top:14px;padding:11px 13px;border-radius:12px;background:var(--warn-soft);
+    color:var(--warn);font-size:12.5px;font-weight:600;display:flex;gap:9px}
+
+  /* list */
+  .li{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line-2)}
+  .li:last-child{border-bottom:0}
+  .li .ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0}
+  .ic-sell{background:var(--bad-soft);color:var(--bad)}
+  .ic-hold{background:var(--good-soft);color:var(--good)}
+  .li .m{flex:1;min-width:0}
+  .li .m .t{font-weight:700;font-size:13.5px}
+  .li .m .s{color:var(--ink-3);font-size:11.5px}
+  .li .amt{font-weight:800;font-size:14px;text-align:right;white-space:nowrap}
+  .li .amt small{display:block;color:var(--ink-3);font-weight:600;font-size:10.5px}
+
+  .verdict{background:linear-gradient(135deg,var(--warn-soft),var(--card));}
+  .verdict .big{font-size:19px;font-weight:800;margin:2px 0 8px}
+  .verdict p{margin:0;color:var(--ink-2);font-size:13.5px}
+  .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+  .vgrid .b{background:var(--card);border:1px solid var(--line-2);border-radius:12px;padding:12px 13px}
+  .vgrid .b .q{font-size:11px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+  .vgrid .b .a{font-size:13.5px;font-weight:600;margin-top:3px}
+
+  .foot{margin-top:22px;color:var(--ink-3);font-size:11.5px;line-height:1.6}
+  .foot strong{color:var(--ink-2)}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div class="tick">
+      <div class="logo"></div>
+      <div>
+        <h1>Apple Inc. · AAPL</h1>
+        <div class="sub">Reporte StockFinder · 23 jul 2026 · <span class="num">zona ~$300–327</span></div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <span class="pill warn"><span class="dot"></span>VIGILAR — esperar mejor entrada</span>
+    <div class="glob"><span class="v num t-warn">67</span><span class="d">/100 · confianza media</span></div>
+  </div>
+
+  <div class="grid">
+
+    <!-- Verdict -->
+    <div class="card verdict col-8">
+      <span class="eyebrow">Veredicto del Agente Principal</span>
+      <div class="big">Gran empresa, pero cara y técnicamente estirada.</div>
+      <p>Los fundamentales son excelentes; el problema es el <strong>precio de entrada</strong>. AAPL cotiza cerca de máximos y con un P/E muy por encima de su media histórica. Ninguna bandera roja crítica fuerza «Evitar», pero según tu perfil —que prioriza <em>timing</em> y puntos de entrada/salida— hoy no es el momento.</p>
+      <div class="vgrid">
+        <div class="b"><div class="q">¿Buen precio?</div><div class="a">No hoy · valuación exigente</div></div>
+        <div class="b"><div class="q">Decisión</div><div class="a t-warn">Vigilar, no comprar al tope</div></div>
+        <div class="b"><div class="q">¿Cuándo revisar?</div><div class="a">Próximo earnings (~nov 2026)</div></div>
+        <div class="b"><div class="q">o si retrocede a</div><div class="a t-good">Soporte $275–294</div></div>
+      </div>
+    </div>
+
+    <!-- Gauge -->
+    <div class="card col-4">
+      <div class="card-head"><div><h3>Scorecard global</h3><div class="cap" style="margin:0">Suma ponderada de 6 agentes</div></div></div>
+      <div class="gauge">
+        <svg width="200" height="112" viewBox="0 0 200 112" role="img" aria-label="Puntaje 67 de 100">
+          <path d="M14 100 A86 86 0 0 1 186 100" fill="none" stroke="var(--line-2)" stroke-width="16" stroke-linecap="round"/>
+          <path d="M14 100 A86 86 0 0 1 186 100" fill="none" stroke="var(--warn)" stroke-width="16" stroke-linecap="round"
+                stroke-dasharray="270.2" stroke-dashoffset="89.2"/>
+        </svg>
+        <div class="val num t-warn">67</div>
+        <div class="of">de 100</div>
+      </div>
+      <div class="zones">
+        <div class="z-bad">Evitar<br>&lt;55</div>
+        <div class="z-warn z-on">Vigilar<br>55–69</div>
+        <div class="z-good">Invertir<br>≥70</div>
+      </div>
+    </div>
+
+    <!-- Agent scorecard -->
+    <div class="card col-6">
+      <div class="card-head">
+        <div><h3>Puntaje por agente</h3><div class="cap" style="margin:0">Peso × puntaje = aporte a la decisión</div></div>
+        <span class="tag">6 agentes</span>
+      </div>
+      <div class="bars">
+        <div class="brow"><div class="nm">Financial<small>PESO 20%</small></div><div class="track"><div class="fill f-good" style="width:88%"></div></div><div class="sc num t-good">88</div></div>
+        <div class="brow"><div class="nm">Business<small>PESO 15%</small></div><div class="track"><div class="fill f-good" style="width:80%"></div></div><div class="sc num t-good">80</div></div>
+        <div class="brow"><div class="nm">Market<small>PESO 10%</small></div><div class="track"><div class="fill f-good" style="width:70%"></div></div><div class="sc num t-good">70</div></div>
+        <div class="brow"><div class="nm">Technical<small>PESO 10%</small></div><div class="track"><div class="fill f-warn" style="width:62%"></div></div><div class="sc num t-warn">62</div></div>
+        <div class="brow"><div class="nm">Risk<small>PESO 25%</small></div><div class="track"><div class="fill f-warn" style="width:60%"></div></div><div class="sc num t-warn">60</div></div>
+        <div class="brow"><div class="nm">Valuation<small>PESO 20%</small></div><div class="track"><div class="fill f-bad" style="width:48%"></div></div><div class="sc num t-bad">48</div></div>
+      </div>
+      <div class="legend" style="margin-top:14px">
+        <span><span class="swatch" style="border-color:var(--good)"></span>Favorable ≥70</span>
+        <span><span class="swatch" style="border-color:var(--warn)"></span>Mixto 55–69</span>
+        <span><span class="swatch" style="border-color:var(--bad)"></span>Desfavorable &lt;55</span>
+      </div>
+    </div>
+
+    <!-- Financial KPIs -->
+    <div class="card col-6">
+      <div class="card-head"><div><h3>Financial · Q2 FY2026</h3><div class="cap" style="margin:0">Trimestre cerrado 28-mar-2026 (dato real)</div></div><span class="tag t-good">Puntaje 88</span></div>
+      <div class="kpis">
+        <div class="kpi"><div class="k">Ingresos</div><div class="v num">$111.2B <small class="up">▲17%</small></div></div>
+        <div class="kpi"><div class="k">Margen bruto</div><div class="v num">49.3%</div></div>
+        <div class="kpi"><div class="k">FCF margin (TTM)</div><div class="v num">~28.6%</div></div>
+        <div class="kpi"><div class="k">Caja neta</div><div class="v num">$62B</div></div>
+      </div>
+    </div>
+
+    <!-- Price scenarios -->
+    <div class="card col-12">
+      <div class="card-head">
+        <div><h3>Escenarios de precio</h3><div class="cap" style="margin:0">Siempre un rango, no un solo número · supuestos etiquetados</div></div>
+        <span class="tag t-bad">Valuation 48 · cara</span>
+      </div>
+
+      <div class="scn">
+        <!-- now line + tag -->
+        <div class="srow" style="height:26px;margin-bottom:2px">
+          <div class="now-tag num" style="left:48.6%;top:0">Precio hoy ~$302</div>
+        </div>
+
+        <!-- bearish -->
+        <div class="srow">
+          <div class="now-line" style="left:48.6%;bottom:0"></div>
+          <div class="sband b-bad num" style="left:7.1%;width:14.3%">$215–245</div>
+        </div>
+        <div class="slabel"><span class="t-bad">Bajista</span><span class="as">P/E ~24 (media histórica) · EPS fwd ~$9.6</span></div>
+
+        <!-- base -->
+        <div class="srow" style="margin-top:8px">
+          <div class="now-line" style="left:48.6%;bottom:0"></div>
+          <div class="sband b-warn num" style="left:42.9%;width:14.3%">$290–320</div>
+        </div>
+        <div class="slabel"><span class="t-warn">Base</span><span class="as">P/E ~30 · EPS fwd ~$9.6 · alineado con consenso analista</span></div>
+
+        <!-- bullish -->
+        <div class="srow" style="margin-top:8px">
+          <div class="now-line" style="left:48.6%;bottom:0"></div>
+          <div class="sband b-good num" style="left:76.2%;width:19%">$360–400</div>
+        </div>
+        <div class="slabel"><span class="t-good">Alcista</span><span class="as">P/E ~35 · EPS ~$10.5 (Services acelera)</span></div>
+
+        <!-- scale -->
+        <div class="scale">
+          <span class="tick-l num" style="left:0%">$200</span>
+          <span class="tick-l num" style="left:23.8%">$250</span>
+          <span class="tick-l num" style="left:47.6%">$300</span>
+          <span class="tick-l num" style="left:71.4%">$350</span>
+          <span class="tick-l num" style="left:95.2%">$400</span>
+        </div>
+      </div>
+
+      <div class="legend" style="margin-top:16px">
+        <span><span class="swatch sw-solid"></span>Dato real (precio actual)</span>
+        <span><span class="swatch sw-dash"></span>Estimación (escenarios proyectados)</span>
+        <span style="color:var(--ink-3)">Consenso 47 analistas: target medio ~$310–318 · rango $215–400</span>
+      </div>
+    </div>
+
+    <!-- Technical ladder -->
+    <div class="card col-7">
+      <div class="card-head"><div><h3>Technical · niveles clave</h3><div class="cap" style="margin:0">Zonas de soporte/resistencia · entrada/salida</div></div><span class="tag t-warn">Puntaje 62</span></div>
+      <div class="ladder">
+        <div class="lrow"><div class="lv num">$317</div><div class="lb">Máximo del último mes / resistencia</div><span class="chip c-res">Resistencia</span></div>
+        <div class="lrow"><div class="lv num">~$302</div><div class="lb">Precio actual — extendido al alza</div><span class="chip c-now">Precio hoy</span></div>
+        <div class="lrow"><div class="lv num">$291–295</div><div class="lb">Soporte 1 (medias + líneas de tendencia)</div><span class="chip c-sup">Soporte</span></div>
+        <div class="lrow"><div class="lv num">$275–278</div><div class="lb">Soporte 2 — zona de entrada preferida</div><span class="chip c-sup">Soporte</span></div>
+        <div class="lrow"><div class="lv num">~$274</div><div class="lb">Media móvil de 200 días</div><span class="chip c-ma">200 DMA</span></div>
+      </div>
+    </div>
+
+    <!-- Risk -->
+    <div class="card col-5">
+      <div class="card-head"><div><h3>Risk · tu perfil</h3><div class="cap" style="margin:0">Capital $25,000 · pérdida máx. 8–10%</div></div><span class="tag t-warn">Puntaje 60</span></div>
+      <div style="font-size:12.5px;color:var(--ink-2)">Riesgo por operación sugerido</div>
+      <div class="seg">
+        <i class="on"></i><i class="on"></i><i></i><i></i><i class="max"></i>
+      </div>
+      <div class="rlab"><span class="num">Media posición: riesgo ~$1,000 (4%)</span><span class="num t-bad">Tope 10% = $2,500</span></div>
+      <div class="note">⚠️ Una posición completa (~82 acc. ≈ $24.8k) = 100% del capital en un solo nombre. Para principiante: entrar con media posición y promediar en soporte.</div>
+    </div>
+
+    <!-- Insiders -->
+    <div class="card col-6">
+      <div class="card-head"><div><h3>SEC Insiders</h3><div class="cap" style="margin:0">Relevante = monto &gt; $1M USD</div></div><span class="tag">Form 4</span></div>
+      <div class="li">
+        <div class="ic ic-sell">VE</div>
+        <div class="m"><div class="t">Arthur Levinson · Director</div><div class="s">Venta en mercado abierto · 250,000 acc. · 6-may-2026</div></div>
+        <div class="amt num t-bad">~$70M+<small>VENTA</small></div>
+      </div>
+      <div class="li">
+        <div class="ic ic-hold">—</div>
+        <div class="m"><div class="t">CFO Parekh · P. Contable Borders</div><div class="s">Ventas ~$421K y ~$369K bajo plan 10b5-1</div></div>
+        <div class="amt num" style="color:var(--ink-3)">&lt;$1M<small>OMITIDO</small></div>
+      </div>
+    </div>
+
+    <!-- Related investors -->
+    <div class="card col-6">
+      <div class="card-head"><div><h3>Inversionistas relacionados</h3><div class="cap" style="margin:0">Con otras empresas exitosas</div></div></div>
+      <div class="li">
+        <div class="ic ic-hold">BH</div>
+        <div class="m"><div class="t">Berkshire Hathaway</div><div class="s">227.9M acc. · ~22% del portafolio · mayor posición, sin cambios Q1</div></div>
+        <div class="amt num">$57.8B<small>HOLD</small></div>
+      </div>
+      <div class="li">
+        <div class="ic ic-hold" style="background:var(--line-2);color:var(--ink-2)">★</div>
+        <div class="m"><div class="t">Otras de Berkshire</div><div class="s">Coca-Cola · American Express · Bank of America · Chevron</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <strong>Nota de datos (regla de oro):</strong> las fuentes públicas gratuitas difieren en el precio del día ($302.25 el 23-jul vs $326.59 el 20-jul; rango del mes $273.75–$317.40). El precio actual se trata como una <strong>zona ~$300–327</strong>, a confirmar con Schwab en tiempo real. Histórico = dato real; escenarios = estimación tipo analista.<br>
+    <strong>Aviso:</strong> reporte <strong>informativo</strong> para tu propio criterio — no es asesoría financiera regulada. Fuentes: stockanalysis.com, CNBC, GuruFocus, StockTitan (SEC Form 4), altindex, Chase/Fed.
+  </div>
+</div>
