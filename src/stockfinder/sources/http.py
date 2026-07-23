@@ -6,11 +6,26 @@ Se usa para el comando `check` y peticiones GET simples sin depender de
 
 from __future__ import annotations
 
+import gzip
 import json
 import urllib.error
 import urllib.parse
 import urllib.request
+import zlib
 from typing import Any
+
+
+def _decode(raw: bytes, encoding: str | None) -> str:
+    """Descomprime gzip/deflate si aplica y decodifica a texto."""
+    enc = (encoding or "").lower()
+    try:
+        if enc == "gzip":
+            raw = gzip.decompress(raw)
+        elif enc == "deflate":
+            raw = zlib.decompress(raw)
+    except (OSError, zlib.error):
+        pass
+    return raw.decode("utf-8", "replace")
 
 
 class HttpError(Exception):
@@ -56,11 +71,11 @@ def post_form(
 def _read_json(req: urllib.request.Request, timeout: float, url: str) -> Any:
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
-            body = resp.read().decode("utf-8")
+            body = _decode(resp.read(), resp.headers.get("Content-Encoding"))
     except urllib.error.HTTPError as exc:
         detail = ""
         try:
-            detail = " " + exc.read(200).decode("utf-8", "replace")
+            detail = " " + _decode(exc.read(), exc.headers.get("Content-Encoding"))[:300]
         except Exception:
             pass
         raise HttpError(f"HTTP {exc.code} en {url.split('?')[0]}{detail}", exc.code) from exc
