@@ -41,13 +41,22 @@ src/stockfinder/
 └─ orchestrator.py # Agente Principal (próxima fase)
 ```
 
+## Analizar un ticker
+```powershell
+$env:PYTHONPATH="src"; python -m stockfinder analyze AAPL --capital 25000
+```
+Corre los 6 sub-agentes, agrega el scorecard y genera el reporte (decisión,
+entrada/salida, escenarios, insiders >$1M).
+
 ## Estado
 - ✅ Config + carga de claves
 - ✅ `check` (validación de fuentes)
 - ✅ Conectores FMP, Finnhub y FRED (datos reales verificados)
-- ⬜ Conector Schwab (OAuth)
-- ⬜ Sub-agentes y scorecard
-- ⬜ Orquestador + reporte
+- ✅ Sub-agentes (Business, Financial, Market, Technical, Valuation, Risk)
+- ✅ Scorecard + regla de decisión (Cerebro/00)
+- ✅ Orquestador + reporte de texto (`analyze <TICKER>`)
+- ⬜ Conector Schwab (OAuth) — opcional
+- ⬜ Reporte visual HTML (reusar `referencias/ejemplos/`)
 
 ### Conectores disponibles (`sources/`)
 | Fuente | Métodos clave |

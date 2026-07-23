@@ -94,6 +94,16 @@ def cmd_check(ping: bool) -> int:
     return 0 if all_ok else 1
 
 
+def cmd_analyze(symbol: str, capital: float | None) -> int:
+    from .orchestrator import analyze
+    from .report import render_text
+
+    print(f"Analizando {symbol.upper()}... (trayendo datos de las fuentes)\n")
+    result = analyze(symbol, capital=capital)
+    print(render_text(result))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="stockfinder")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -102,9 +112,16 @@ def main(argv: list[str] | None = None) -> int:
     p_check.add_argument("--no-ping", action="store_true",
                          help="no hacer llamadas de red, solo verificar presencia")
 
+    p_an = sub.add_parser("analyze", help="analiza un ticker y genera el reporte")
+    p_an.add_argument("symbol", help="ticker, p. ej. AAPL")
+    p_an.add_argument("--capital", type=float, default=None,
+                      help="capital disponible en USD (para dimensionar la posicion)")
+
     args = parser.parse_args(argv)
     if args.cmd == "check":
         return cmd_check(ping=not args.no_ping)
+    if args.cmd == "analyze":
+        return cmd_analyze(args.symbol, args.capital)
     return 2
 
 
