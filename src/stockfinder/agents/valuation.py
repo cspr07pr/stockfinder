@@ -32,7 +32,11 @@ def run(bundle, profile=None) -> Scorecard:
     if upside is not None:
         subs.append(SubMetric("Upside a consenso", f"{upside:+.1f}%", lin(upside, -20, 30)))
     if pe is not None:
-        subs.append(SubMetric("P/E (TTM)", f"{pe:.1f}", lin(pe, 45, 15)))  # menor = mejor
+        if pe <= 0:
+            # P/E negativo = sin utilidades: no se puede valuar por P/E, se penaliza.
+            subs.append(SubMetric("P/E (TTM)", f"{pe:.1f} (sin utilidades)", 15))
+        else:
+            subs.append(SubMetric("P/E (TTM)", f"{pe:.1f}", lin(pe, 45, 15)))  # menor = mejor
     score = avg([s.points for s in subs]) if subs else 50
 
     # Veredicto textual
@@ -46,7 +50,9 @@ def run(bundle, profile=None) -> Scorecard:
         verdict = "cara"
 
     red = []
-    if pe is not None and pe > 35:
+    if pe is not None and pe <= 0:
+        red.append("Sin utilidades (P/E negativo): no valuable por multiplos de ganancias")
+    elif pe is not None and pe > 35:
         red.append(f"P/E elevado ({pe:.0f}) vs. mercado")
     if upside is not None and upside < -10:
         red.append("Precio por encima del consenso de analistas")
