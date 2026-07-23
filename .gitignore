@@ -8,6 +8,11 @@
 **/secrets.*
 **/*apikey*
 **/*api_key*
+API/keys*.json
+
+# ...pero SÍ versionar las plantillas de ejemplo (sin claves reales)
+!.env.example
+!**/.env.example
 
 # Sistema
 Thumbs.db
