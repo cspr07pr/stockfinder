@@ -16,6 +16,16 @@ API/schwab_token.json
 !.env.example
 !**/.env.example
 
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+
 # Sistema
 Thumbs.db
 Desktop.ini

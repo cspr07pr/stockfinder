@@ -1,0 +1,7 @@
+# Dependencias de StockFinder (Python 3.12+)
+# Instalar con:  python -m pip install -r requirements.txt
+
+requests>=2.31        # llamadas HTTP a FMP, Finnhub, FRED
+python-dotenv>=1.0    # carga de API/.env
+authlib>=1.3          # flujo OAuth 2.0 de Charles Schwab
+rich>=13.7            # salida en terminal (tablas, colores)
