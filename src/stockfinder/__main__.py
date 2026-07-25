@@ -118,11 +118,17 @@ def cmd_schwab_login(redirect_url: str | None) -> int:
     if not redirect_url:
         print("Paso 1. Abre esta URL en tu navegador e inicia sesion en Schwab:\n")
         print("   " + auth.build_authorize_url() + "\n")
-        print("Paso 2. Tras autorizar, el navegador te llevara a una pagina que")
-        print("        NO carga (https://127.0.0.1/...). Copia la URL COMPLETA")
-        print("        de la barra de direcciones y vuelve a correr:\n")
-        print('   python -m stockfinder schwab-login --redirect-url "PEGA_LA_URL_AQUI"\n')
-        return 0
+        print("Paso 2. Tras autorizar, copia la URL de redireccion completa")
+        print("        (la que empieza con la callback y trae ?code=...).\n")
+        try:
+            redirect_url = input("Pega aqui la URL de redireccion y presiona Enter:\n> ").strip()
+        except EOFError:
+            print("\n(Entrada no interactiva) Vuelve a correr con:")
+            print('   python -m stockfinder schwab-login --redirect-url "PEGA_LA_URL_AQUI"')
+            return 0
+        if not redirect_url:
+            print("No se recibio ninguna URL.")
+            return 1
 
     try:
         auth.exchange_code(redirect_url)
