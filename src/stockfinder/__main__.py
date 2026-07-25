@@ -94,13 +94,26 @@ def cmd_check(ping: bool) -> int:
     return 0 if all_ok else 1
 
 
-def cmd_analyze(symbol: str, capital: float | None) -> int:
+def cmd_analyze(symbol: str, capital: float | None,
+                as_html: bool, open_browser: bool) -> int:
     from .orchestrator import analyze
     from .report import render_text
 
     print(f"Analizando {symbol.upper()}... (trayendo datos de las fuentes)\n")
     result = analyze(symbol, capital=capital)
     print(render_text(result))
+
+    if as_html:
+        from pathlib import Path
+        from .config import REPO_ROOT
+        from .visual import render_html
+        out = REPO_ROOT / "reports" / f"{symbol.upper()}-dashboard.html"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(render_html(result), encoding="utf-8")
+        print(f"\n{OK}  Dashboard visual: {out}")
+        if open_browser:
+            import webbrowser
+            webbrowser.open(out.as_uri())
     return 0
 
 
@@ -169,6 +182,10 @@ def main(argv: list[str] | None = None) -> int:
     p_an.add_argument("symbol", help="ticker, p. ej. AAPL")
     p_an.add_argument("--capital", type=float, default=None,
                       help="capital disponible en USD (para dimensionar la posicion)")
+    p_an.add_argument("--html", action="store_true",
+                      help="genera el dashboard visual en reports/<TICKER>-dashboard.html")
+    p_an.add_argument("--open", action="store_true", dest="open_browser",
+                      help="abre el dashboard en el navegador (implica --html)")
 
     p_login = sub.add_parser("schwab-login", help="autoriza Charles Schwab (OAuth)")
     p_login.add_argument("--redirect-url", default=None,
@@ -181,7 +198,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "check":
         return cmd_check(ping=not args.no_ping)
     if args.cmd == "analyze":
-        return cmd_analyze(args.symbol, args.capital)
+        return cmd_analyze(args.symbol, args.capital,
+                           as_html=args.html or args.open_browser,
+                           open_browser=args.open_browser)
     if args.cmd == "schwab-login":
         return cmd_schwab_login(args.redirect_url)
     if args.cmd == "schwab-test":

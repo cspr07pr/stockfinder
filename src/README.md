@@ -43,10 +43,13 @@ src/stockfinder/
 
 ## Analizar un ticker
 ```powershell
-$env:PYTHONPATH="src"; python -m stockfinder analyze AAPL --capital 25000
+python run.py analyze AAPL --capital 25000          # reporte de texto
+python run.py analyze AAPL --capital 25000 --html   # + dashboard visual
+python run.py analyze AAPL --capital 25000 --open    # + abre el dashboard
 ```
 Corre los 6 sub-agentes, agrega el scorecard y genera el reporte (decisión,
-entrada/salida, escenarios, insiders >$1M).
+entrada/salida, escenarios, insiders >$1M). Con `--html` escribe el dashboard
+en `reports/<TICKER>-dashboard.html` (mismo estilo que `referencias/ejemplos/`).
 
 ## Charles Schwab (OAuth 2.0)
 La primera vez hay que autorizar en el navegador:
@@ -70,7 +73,8 @@ refrescan solos. El access token dura ~30 min; el refresh ~7 días.
 - ✅ Scorecard + regla de decisión (Cerebro/00)
 - ✅ Orquestador + reporte de texto (`analyze <TICKER>`)
 - ✅ Conector Schwab (OAuth) — `schwab-login` / `schwab-test`
-- ⬜ Reporte visual HTML (reusar `referencias/ejemplos/`)
+- ✅ Fallback Schwab (precio/historial cuando FMP no cubre el ticker)
+- ✅ Reporte visual HTML automático (`analyze --html`)
 
 ### Conectores disponibles (`sources/`)
 | Fuente | Métodos clave |

@@ -16,6 +16,9 @@ API/schwab_token.json
 !.env.example
 !**/.env.example
 
+# Reportes generados (dashboards por ticker)
+reports/
+
 # Python
 __pycache__/
 *.py[cod]
