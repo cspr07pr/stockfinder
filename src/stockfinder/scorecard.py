@@ -100,9 +100,11 @@ def aggregate(cards: list[Scorecard]) -> Decision:
     critical = [f"[{c.agent}] {flag}" for c in cards for flag in c.critical_flags]
 
     # Regla de decision
+    # Una bandera critica confirmada veta (Evitar) aunque falten datos.
+    # Si falta mas de la mitad del peso, no hay base para concluir (Sin decision).
     if critical:
         label = "Evitar"
-    elif global_score is None:
+    elif global_score is None or missing_w > 0.5:
         label = "Sin decision"
     elif global_score >= 70:
         label = "Invertir"

@@ -39,6 +39,8 @@ def render_text(a: Analysis) -> str:
     L.append(f" DECISION: {d.label.upper()}   |   Global {gs}   |   Confianza {d.confidence}")
     if d.missing_weight > 0:
         L.append(f" (peso sin datos: {d.missing_weight*100:.0f}% -> confianza reducida)")
+    if d.label == "Sin decision":
+        L.append(" No tengo data suficiente para llegar a una conclusion de inversion.")
     L.append("")
 
     # Veredicto de precio
