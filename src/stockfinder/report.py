@@ -41,6 +41,8 @@ def render_text(a: Analysis) -> str:
         L.append(f" (peso sin datos: {d.missing_weight*100:.0f}% -> confianza reducida)")
     if d.label == "Sin decision":
         L.append(" No tengo data suficiente para llegar a una conclusion de inversion.")
+    if data.history_source == "Schwab" or data.price_source.startswith("Schwab"):
+        L.append(" (Precio/tecnico via Schwab: FMP no cubre este ticker en el plan actual)")
     L.append("")
 
     # Veredicto de precio

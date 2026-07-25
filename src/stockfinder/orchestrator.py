@@ -19,6 +19,7 @@ from .sources.finnhub import Finnhub
 from .sources.fmp import FMP
 from .sources.fred import FRED
 from .sources.http import HttpError
+from .sources.schwab import SchwabAuth, SchwabClient
 
 
 @dataclass
@@ -41,6 +42,8 @@ class MarketData:
     fh_profile: dict = field(default_factory=dict)
     macro: dict = field(default_factory=dict)
     tech: dict = field(default_factory=dict)   # se llena tras el agente Technical
+    price_source: str = "FMP"
+    history_source: str = "FMP"
     warnings: list = field(default_factory=list)
 
 
@@ -91,7 +94,36 @@ def fetch(symbol: str, cfg: Config) -> MarketData:
             d.price = fq.get("c") or d.price
     if fr:
         d.macro = _safe(d, "fred.macro", lambda: fr.macro_snapshot()) or {}
+
+    # Fallback Schwab: si FMP no cubre el ticker (402/premium), usar precio e
+    # historial en tiempo real del broker para rescatar Technical y Risk.
+    if cfg.has("schwab") and (not d.price or not d.history):
+        try:
+            client = SchwabClient(SchwabAuth(cfg))
+            if not d.price:
+                q = _safe(d, "schwab.quote", lambda: client.quote(symbol)) or {}
+                quote = q.get("quote", q)
+                d.price = quote.get("lastPrice") or quote.get("mark") or d.price
+                if d.price:
+                    d.price_source = "Schwab (tiempo real)"
+            if not d.history:
+                candles = _safe(d, "schwab.history",
+                                lambda: client.price_history(symbol)) or []
+                if candles:
+                    d.history = _schwab_history(candles)
+                    d.history_source = "Schwab"
+        except (HttpError, ValueError) as exc:
+            d.warnings.append(f"schwab.fallback: {exc}")
     return d
+
+
+def _schwab_history(candles: list[dict]) -> list[dict]:
+    """Convierte candles de Schwab (mas antiguo primero) al formato del sistema
+    (mas reciente primero, con 'price' = cierre)."""
+    out = [{"price": c.get("close"), "date": c.get("datetime")}
+           for c in candles if c.get("close")]
+    out.reverse()
+    return out
 
 
 def relevant_insiders(insiders: list, threshold: float = 1_000_000) -> list[dict]:
